@@ -1436,7 +1436,7 @@ ungroup() %>%
 summarise(n = sum(n))
 ```
 ```{r map, echo=FALSE}
-      leaflet()  %>%  addTiles("COVID COLOMBIA") %>%
+      leaflet()  %>%  addTiles() %>%
       ##addProviderTiles(providers$Stamen.Toner) %>%
       addCircleMarkers(radius = 8,fill = 0.8,color = "purple",
       lng=by_map_depart$Longitud , lat=by_map_depart$Latitud , 
