@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Sandra Rairán" />
+
+
+<title>R Markdown and Leaflet</title>
+
+<script src="site_libs/header-attrs-2.3/header-attrs.js"></script>
+<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
+<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">My Website</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">R Markdown and Leaflet</h1>
+<h4 class="author">Sandra Rairán</h4>
+<h4 class="date">9/9/2020</h4>
+
+</div>
+
+
+<div id="create-a-web-page-using-r-markdown-that-features-a-map-created-with-leaflet." class="section level3">
+<h3>Create a web page using R Markdown that features a map created with Leaflet.</h3>
+</div>
+<div id="projecj-developing-data-products" class="section level3">
+<h3>Projecj Developing Data Products</h3>
+<div id="htmlwidget-902a110c72fc21755ba1" style="width:672px;height:480px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-902a110c72fc21755ba1">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["COVID COLOMBIA",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false}]},{"method":"addCircleMarkers","args":[[5.75,8,6.6666667,3.9166667,8.3333333,1.75,8.25,2.3333333,4.4166667,8.3333333,6.25,5.6333333,5.1730556,9.9166667,3.25,4.9166667,11.1597222,4.6666667,0.9166667,6.3666667,10.1869444,2.5833333,3.4166667,2.1666667,5.6666667,8.7944444,4.5833333,6.05,7,4.8333333,4.6166667,1.25,4.1741667,5.5833333,6.1333333,6.8666667,4.8333333,7.1666667,5.25,4.7972222,6.3333333,4.6666667,7.8855556,5.1666667,4.5833333,5.5197222,10.5833333,5.3,6.8333333,7.0902778,6.8219444,4.3,1.5033333,7.6666667,8.5,5.8,8.4666667,4.7,10.25,10.1666667,4.5338889,5.0833333,10.2497222,9.5011111,3.3333333,5.5333333,8.25,5.5,10.3666667,4.8989,2.1,10.8,3.1666667,1.5833333,6.45,6.75,4.5755556,7.0652778,11,8.8333333,10.9638889,9.705,5,1.5975,1.4166667,5.25,6.3388889,6.6666667,4.8,5.75,6.2,4.9166667,6.4166667,7.6666667,4.6,4.75,6.5236111,6.25,9.9761111,5.5,7.1122222,7.1297222,8.0833333,3.8933333,5.5,2.9166667,1.25,4.2094444,6.75,3.9780556,4.2902778,7.6666667,5.2666667,7.75,7.25,6.45,4.33365917459535,1.1936111,4.4166667,2.6666667,5,10.25,4.5325,6.0833333,2.8333333,3.4372222,7.4166667,3.9166667,3.0833333,7.0833333,10.4166667,2.6666667,8.6761111,6.75,3.4130556,7.3791667,5.4166667,6.6,4.45,6.4119444,5.5833333,6.8333333,7.7663889,4.15,5.3502778,7.158,6.8,10.3997222,1.35,4.7463889,0.9166667,5.0833333,3.8,7.9166667,6.8333333,8.9166667,6,7,10.25,5.4,1.35943053925138,9.5491667,3.75,6.25,4.9166667,7.6666667,6.4166667,9.0833333,9.2577778,7.75,5,9.0833333,4.5,6.1333333,5.6333333,5.6083333,9.5,6.75,6.1666667,7.1666667,6.0833333,5.5333333,10.0280556,4.8855556,4.5833333,5.1666667,9.4166667,10.8333333,8.8333333,5.4666667,6.3161111,4.6166667,6.5833333,5.8333333,10.5891667,6,4.3333333,5.15,2.5,1.1936111,9.4966667,5.75,6.9166667,9.8402778,5.1666667,6.4166667,1.20840649727186,0.9166667,6.3333333,8.8333333,6.3333333,5.4333333,4.3905556,3.1666667,6.3333333,9.3333333,5.8666667,4.8333333,9.05,6.5833333,9.4166667,3.8333333,0.8658333,7.0411111,5.5333333,5.25,7.8833333,7.5,5.65,4.25,4.4444444,0.9166667,1.6533333,4.0833333,1.0352778,6.6666667,2.3333333,7,3.6602778,11.2722222,10.8977778,3.6666667,6.5,4.8347222,5.8269444,7.75,6.3333333,4.9166667,7.5941667,9.0455556,4.75,5.3388889,8.75,5.89899,9.75,6.7,6.085,3.5680556,3.6666667,2.3333333,6.4166667,4.5833333,10.1505556,1.6794444,2.7791667,4.5,6.5833333,6.3333333,10.0833333,4.2586111,4.26142,10.6533333,9.6622222,1.564,1.4333333,5.3333333,10.3333333,7.4766667,10.6166667,2.3305556,9.1,4.85,1.8333333,6.1333333,2.5,8.5847222,7.9355556,2.0833333,6.1666667,6.5833333,6.1730556,4.2,4.8166667,5.3,4.6666667,5.75,4.25,1.6175,5.8047222,3.3275,7.0647222,4.5833333,10.8333333,6.7461111,4.3333333,2.1019444,5.9166667,5.1666667,6.6666667,3.4594444,10.4166667,0.95,4.7833333,5.4166667,4.4166667,4.6666667,5.0833333,5.75,4.9166667,1.85,10.9166667,9.1630556,4.75,8.3333333,5.85,5.1333333,2.25,4.25,2.5,3.75,6.6666667,4.3030556,6.4166667,7.0708333,6.75,8.4,7.9166667,6.1666667,7,6.5,3.7694444,3.1333333,5.4166667,1,3.9022222,2.0833333,5.25,1.15,0.8333333,9.25,4.0833333,2.4166667,6.3833333,8.4697222,6.25,4.8333333,6.25,4.5833333,4.9666667,6.25,5.3333333,6,4.2163889,5,8.5,8.9586111,6.5833333,6.1555556,11.0694444,6.2333333,7.5,5.0833333,5.8025,2.5833333,5.25,4.4388889,4.1666667,0.95,1.05,3.8652778,2.6666667,0.8302778,2.75,2.0833333,5.1588889,6.1719444,7.25,5.6666667,2.85,3.1666667,5.5833333,5.3888889,5.75,4.6666667,10.8333333,4.75,8.05,2.25,5.8613889,4.75,6,4.9666667,-1.45,1.55,3.6666667,5.5333333,8.1666667,6.1666667,1.25,8.5833333,9.5641667,10.5166667,1.4777778,2.8536111,5.4019444,4.6666667,1.5833333,5.4166667,10.1666667,-1.25,5.75,2.4166667,8.25,5.4905556,2.25,4.45,2.4108333,4.5358333,6.3333333,5,4.5238889,4.9166667,7.3333333,6.2238889,7.4166667,1.9375,3.5136111,5.3333333,4.9166667,-4.2152778,4.9166667,6.75,1.3833333,5.5833333,2.4333333,9.1666667,1.5155556,1.517,8.9,9.3811111,7.8383333,6.9166667,7.9666667,10.6141667,4.9166667,6.5,5.0833333,4.8333333,9.2413889,1.9166667,10.1666667,11.3841667,8.5,6.7833333,10.8588889,1.0833333,10.5,11.7791667,10.3927778,4.8333333,5.07,5.0833333,5.25,2.8911111,2.617,9.0833333,10,6.2,5.5833333,5.5,5.3333333,4.9166667,6.7833333,6.2913889,5.05,5.1,4.25,1.75,3.3780556,1.3483333,5.25,3.25,5.4166667,1.1983333,1.1488889,6.5833333,6.75,9.2372222,9.25,5.75,5.9166667,8.25,5.9166667,8.2994444,7.75,4.5,8.7575,4.9166667,2.8,1.4875,9.4166667,4.75,5.5797222,6.8,7.3333333,7.3333333,5.5166667,1.5,2.65,3.5833333,8.0963889,8.4238889,5.1666667,2.9305556,5.1333333,4.3333333,5.2,5.8333333,5.1166667,5.5666667,8.5333333,4.9166667,9.8030556,5.4166667,6,4.5833333,8.25,1.85,5.6,6.6666667,1.2666667,6.3333333,2.0833333,0.6966667,4.7941667,3.9166667,1.0333333,5.75,9.5,5.1333333,5.25,5.5,3.0666667,5.1044444,2.45,8.9661111,5.8333333,5.4166667,3,1.75,10.7466667,3.5394444,9.3333333,5.1333333,7.3780556,7.5,4.25,6.5,6.5,4.3730556,4.3333333,1.21467073681653,2.1155556,5.75,5.6666667,5.8833333,6.0833333,10.1666667,8.6916667,6.25,5.5,7,4.8133333,5.5833333,7.7833333,5.8383333,4.5,2.75,4.3333333,9.34372,6.5833333,8.9172222,10.75,2.3333333,1.75,10.4166667,3.25,8.3333333,9.8333333,1.6316667,10.75,10.6436111,3.2775,5.6708333,0.75,3.4211111,3.75,12.5,10.3666667,8.2333333,5.25,10.9833333,0.9166667,0.5158333,6.4166667,5.9780556,0.6838889,6.1877778,11.0166667,2.6794444,8.95,4.3141667,0.9702778,-0.2,4.6,3,4.0833333,6.1916667,-3.7702778,6.6516667,1.9141667,5.5,8.3636111,3.25,5.8708333,7.5833333,0.9166667,2.3480556,3.9166667,9.3,5.15,4.3333333,5.6947222,4.6333333,5.3333333,5.5222222,4.75,7.5833333,5.4166667,5.6166667,5.3333333,8.6666667,7,10.6666667,10.55,4.1666667,6.0833333,1.1666667,8,5.1,5.7,8.59,3.5,4.0833333,11.5444444,7.2191667,5.3791667,5.1666667,2.8333333,1.9166667,4.4147222,2.3333333,4.25,7.3980556,10.8,10.6333333,10.033,6.15,5.75,8.8333333,2.0144444,5.4166667,7.8,3.9347222,4.6666667,6,5.5,5.5833333,1.4166667,9.1666667,1.9166667,7.7525,6.8333333,6.917,9.1666667,1.7986111,9.35,3.9166667,4.1333333,6.1666667,8.75,1.5163889,9.25,8.75,8.7,3.7122222,7.8833333,9.8833333,10.3375,10.3983333,1.91343,9.0833333,6.1166667,6.5833333,9.8333333,9.8316667,6.45,6.4333333,5.0858333,6.65868,6.0833333,7.767,1.3611111,2.5683333,6.8502778,3.3463889,9.2755556,4.9166667,8.7630556,10.8333333,9.9566667,1.5,4.1666667,3.7713889,4.8213889,5.2805556,9.1666667,8.5833333,8.0047222,8.8333333,6.65868,5.55,9.8333333,1.6666667,5.75,4,1.5613889,8.2761111,6.45,9,6.3,6.4166667,1.9166667,9.3333333,5.25,6.8836111,2.1525,6.3333333,9.3333333,1.25,9.3166667,2.3333333,10.6,10.5833333,6.5597222,6.3375,10.3286111,3,11.2472222,10.45,4.8680556,6.6666667,5.9166667,7.9644444,5.75,1.22162,1.2247222,6.0572222,3.0130556,1.1511111,9.5,6.4722222,10.75,5.0833333,1.0333333,6.9205556,8.25,5,6.1666667,6.1333333,7.25,5.0833333,4.2688889,5.5833333,4.4913889,1.1833333,7.2,4.5,2.75,5.5833333,7.5833333,9.3047222,10.9166667,4.5872222,6.4166667,6,6.5333333,5.7205556,0.7147222,10.9172222,0.9,5.75,6.5,10.3333333,4.9166667,5.5,5.8333333,2.2566667,6.1666667,10.3333333,2.9588889,1.9166667,5,9,5.1666667,5.0833333,5.5,5.5,6.2666667,5.6666667,5.251,5,5.3333333,9.3069444,8.8333333,6.4641667,5.6666667,1.5833333,1.0833333,0.4938889,-2.867,7.5833333,2.1666667,5.8333333,5.9166667,5.0186111,5.25,3.0833333,4.7,10,4.9166667,5.15,8.75,2.9166667,2.6666667,5.3333333,5.8333333,8.6480556,8.1736111,2,2.4166667,2.75,5.6333333,6.4233333,8.5597222,6.0833333,5.6666667,4.5,5,5.95,7.3,9.45,7.25,5.8333333,3,4.6116667,5.5,2.5833333,5.4305556,4.25,10.9166667,9.1833333,4.0866667,5.5352778,1.1666667,10.35,10.25,8,5.3333333,5.75,4.8333333,4.5833333,4.7166667,5.2333333,4.3333333,8.0430556,5.283,6.8994444,3.254,11.9166667,6.3333333,10.5666667,10.75,5.25,7.3333333,8.3,6.5,4.25,0.4525,10.4769444,5.6666667,6.7730556,6.0833333,4.75,4.1333333,5.4166667,5.1666667,4.6666667,7.3333333,4.9166667,5,6.5919444,3.6986111,7.9169444,5.35,5.6333333,7.8338889,2.5136111,1.038,5,5,6.6741667,5.2833333,4,4.1533333,3.3333333,5.0833333,4.5,5.5,3.0863889,5.0833333,5.6666667,1.0833333,2.6666667,7,0.614879,6.6666667,7.0077778,5.3394444,3.9166667,3.585,9.75,6.8333333,10.171,7.75,4.3983333,5.35,4.8333333,5.0283333,10.849993],[-75.4166667,-73.2,-76.0833333,-73.8333333,-77.1666667,-75.9166667,-74.5,-75.75,-74.6666667,-73.5833333,-73.4666667,-75.4166667,-72.5547222,-73.25,-75.3333333,-74.45,-72.5855556,-75.75,-77.6833333,-75.0833333,-74.5752778,-75.25,-74.9166667,-75.8333333,-77,-74.1658333,-75,-75.7,-74.9166667,-74.8333333,-74.55,-77.5,-76.1702778,-75.9166667,-75.7,-75.3333333,-74.5,-75.0833333,-75.75,-75.995,-75.9166667,-75.25,-76.6347222,-76,-74.5833333,-72.8875,-74,-75.45,-72.9666667,-70.7616667,-71.3236111,-74.5833333,-77.0877778,-72.75,-76.4166667,-73.3833333,-73.95,-76.1333333,-74,-75.3333333,-75.6811111,-74.8333333,-75.0113889,-73.9802778,-75.6666667,-76.6333333,-75.25,-76.25,-73.6333333,-77.241,-77.2,-74.9166667,-75,-78,-75.3333333,-73.1666667,-72.9611111,-73.8547222,-72.75,-74.1666667,-74.7963889,-73.2847222,-75.8333333,-77.0175,-75.9166667,-75.9166667,-75.5622222,-75.6666667,-74.75,-75.9666667,-75.9166667,-74.55,-72.5833333,-72.5833333,-74.0833333,-74.3333333,-76.9744444,-74,-73.8902778,-72.5,-75.5541667,-73.1258333,-73,-77.0697222,-73.9666667,-76.6666667,-77.0833333,-76.1602778,-75.9166667,-74.4858333,-72.7905556,-75.3333333,-74.5666667,-73.1666667,-72.5833333,-75.9666667,-75.8342456817627,-76.9769444,-75.5,-76.6666667,-74.05,-75,-75.6436111,-75.6333333,-76.4166667,-76.5225,-72.85,-76.6666667,-76.3333333,-75.25,-74.9166667,-75.3333333,-76.2041667,-76,-76.3511111,-73.9180556,-74.5833333,-72.6333333,-73.95,-74.7605556,-75.5833333,-72.5,-76.6611111,-74.7333333,-73.9052778,-76.971,-75.25,-75.5144444,-74.84,-75.9116667,-70.7333333,-75.1666667,-73.5833333,-75,-72.9166667,-76,-72.9166667,-72.5833333,-74.8333333,-76.6,-77.2836685180664,-75.3161111,-75.5833333,-73.0833333,-74.05,-76.6666667,-73.3333333,-75.6333333,-73.8177778,-72.55,-75.6666667,-75.3333333,-74.0833333,-73.55,-73.75,-73.4886111,-73.4166667,-72.3333333,-72.4166667,-72.5833333,-73.3666667,-73.2666667,-74.6436111,-73.3688889,-73.9166667,-73.6666667,-74.7333333,-74.0833333,-75.6666667,-73.25,-73.9505556,-75.6333333,-75.0833333,-76,-75.3341667,-75,-74.9166667,-73.9666667,-75.75,-76.9769444,-75.3555556,-73.25,-72.5,-74.4447222,-76.5,-73.1666667,-77.4632263183594,-77.5333333,-73.4166667,-73.2,-75.5,-74.0333333,-75.6888889,-76.2,-73,-75.25,-72.8333333,-74.1333333,-75.8,-72.7,-75.7,-75.0833333,-77.7294444,-72.0608333,-73.4666667,-73.75,-72.5052778,-72.75,-72.9166667,-73.3333333,-69.8002778,-77.9166667,-77.5833333,-74.6666667,-75.9247222,-73,-77.9166667,-76.25,-76.6927778,-73.3055556,-72.8869444,-74.75,-75.3333333,-75.6725,-73.0202778,-72.6333333,-75.75,-76.0833333,-74.8119444,-73.9747222,-76.25,-76.7313889,-73.3333333,-76.142,-75.1666667,-73.517,-75.3386111,-73.7838889,-76.1666667,-78.35,-72.4166667,-74.45,-73.965,-75.2791667,-72.8719444,-76.25,-72.4166667,-73.4666667,-74.9166667,-77.3675,-77.3651,-72.9241667,-73.7519444,-75.332,-77.4333333,-74.3333333,-74.6666667,-73.2080556,-74.2666667,-72.6277778,-75.2,-74.2666667,-77.3333333,-75.25,-77,-73.0883333,-72.605,-76,-73,-75.5833333,-75.5638889,-74.8333333,-74.3666667,-75.6,-75.6333333,-72.9666667,-74.8333333,-75.6175,-73.9741667,-76.2386111,-73.0897222,-73.8333333,-72.8333333,-71.8566667,-73.9166667,-78.7216667,-75.6666667,-75.0833333,-76.3333333,-73.6127778,-73.9166667,-77.3333333,-74.2,-73.8,-74.4,-73.5,-73.8833333,-73.5,-73.6666667,-69.167,-74.8333333,-75.0525,-73.6,-73.6666667,-72.75,-73.3,-75.5833333,-75.6666667,-75.5,-76.1666667,-75.9166667,-74.8008333,-75.45,-73.1730556,-75.8333333,-73.3333333,-72.75,-75.1333333,-72.7666667,-72.5,-76.3380556,-76.3833333,-73.7,-77.75,-76.3027778,-75.6666667,-74.6666667,-77.5,-77.5833333,-74.1666667,-74.9166667,-77.6,-73.25,-75.5383333,-75.4166667,-73.8333333,-75.1666667,-74.8,-73.75,-75.1666667,-75.8333333,-73.65,-73.8133333,-73.5,-73.0833333,-74.0808333,-73.3333333,-71.7655556,-72.7669444,-75.75,-72.4666667,-75.1666667,-75.9116667,-75.5,-74.8333333,-75.2322222,-74.55,-77.5333333,-77.5,-67.9238889,-76.0833333,-77.6444444,-75.75,-76.25,-76.6916667,-75.6113889,-76,-72.9166667,-76.3166667,-76.5833333,-75.8333333,-73.3680556,-75.75,-74.6666667,-75.0333333,-73.6666667,-75.333,-76.1666667,-73.9683333,-73.9166667,-75.4166667,-76,-72.583,-76.8833333,-76.5833333,-74.7,-72.4666667,-75.6666667,-77.4166667,-73.5833333,-73.3375,-73.0833333,-77.5838889,-73.9436111,-75.8847222,-74.5,-75.25,-74.4166667,-73.25,-69.6,-75.6,-76.1666667,-73.1666667,-70.4091667,-76.8333333,-75.8,-78.2427778,-76.1066667,-72.5,-74.35,-76.0411111,-75.8333333,-72.5,-73.8127778,-73.4166667,-77.3080556,-74.0516667,-73.6666667,-74.9166667,-69.9405556,-75.1666667,-75.75,-77.45,-76.4166667,-76.8,-75.8333333,-77.495,-77.5,-76.3597222,-75.2713889,-72.5133333,-73.0833333,-72.8333333,-75.1461111,-73.25,-74.75,-73.6166667,-74.3,-74.7533333,-77.8333333,-75.1666667,-72.2441667,-74.6666667,-72.6666667,-74.7730556,-77.8166667,-75,-72.4494444,-73.0325,-72.3333333,-75.5205556,-73.5833333,-75.1666667,-72.1322222,-70.533,-74.2,-75.3333333,-75.3,-74,-75.5833333,-75,-75.75,-72.6666667,-75.5361111,-77.05,-76.683,-74.5833333,-77.1666667,-74.0447222,-75.5116667,-73.1666667,-76.25,-76,-70.1733333,-76.6477778,-72.9166667,-72.75,-75.6780556,-74.5833333,-72.8333333,-73.5,-76.05,-75.5,-74.4755556,-75.6666667,-75.8,-75.89,-72.8333333,-76.6666667,-75.725,-75.3333333,-74.3333333,-73.3713889,-76.8,-76.5,-72.7166667,-74.1166667,-78,-75.8,-75.0833333,-74.7758333,-76.7911111,-75.5,-75.3302778,-73.9,-74.5833333,-74.4166667,-72.9166667,-74.4166667,-74.8833333,-74.0333333,-76.5833333,-74.3902778,-73.4166667,-77.3333333,-75.9166667,-73.3,-69.167,-73.3166667,-75.75,-77.4833333,-72.75,-76.0166667,-76.8747222,-71.34,-75.25,-77.55,-74.25,-75.1666667,-73.4,-74.1666667,-75.5,-76.3166667,-73.0555556,-75.75,-73.6316667,-73.1,-72.6666667,-75.5,-76.0666667,-74.7555556,-76.3036111,-75.55,-75.0333333,-72.6525,-72.5833333,-74.5,-72.4166667,-73.1333333,-73.2213889,-74.2833333,-77.2786474227905,-76.9891667,-73.9166667,-72.3816667,-71.9,-72.75,-74.75,-73.6663889,-75.25,-75.0833333,-75.8333333,-75.6961111,-73.05,-75.2,-74.0366667,-74.9166667,-76.5,-75.6666667,-74.425,-73.1666667,-74.4663889,-75.1333333,-75.8333333,-76.1666667,-74.3333333,-75.75,-75.5833333,-74.3333333,-77.4616667,-74.7833333,-74.7544444,-75.6213889,-71.93,-77.4166667,-76.2447222,-74.8333333,-81.75,-73.6333333,-74.9666667,-76.1666667,-74.3333333,-77.25,-76.495,-74.5,-74.5897222,-76.5858333,-67.4730556,-74.8833333,-72.7608333,-76.25,-72.0825,-76.5858333,-74.7666667,-74.1166667,-72.5,-72.9666667,-74.5866667,-70.3830556,-74.0608333,-75.145,-74.5833333,-72.4075,-76.4166667,-74.6455556,-73.6666667,-77.6666667,-76.5008333,-74.9166667,-75.6666667,-74.5,-73.8333333,-76.6611111,-75.75,-75.6666667,-74.1808333,-74.5833333,-72.5,-73.3333333,-73.6333333,-72.75,-73.8333333,-74.4166667,-74.5833333,-75.1333333,-73.4166667,-75.5,-78.1666667,-73.5,-76.6666667,-76.6666667,-73.8436111,-75.8333333,-76.3333333,-72.9072222,-73.1558333,-75.6161111,-75.75,-75.1666667,-78.3333333,-76.1547222,-76.75,-75.3333333,-73.4969444,-74.75,-74.8333333,-74.217,-75.6,-73.7,-75.4166667,-76.0502778,-75.4166667,-72.8333333,-75.0202778,-75.5,-76,-73.5,-74.9166667,-77.6666667,-75.3,-76.3333333,-73.3891667,-72.75,-75.667,-75.55,-78.8155556,-75.75,-75.5,-74.5,-73.4666667,-74.9166667,-77.0466667,-76,-73.0333333,-75.7,-73.2436111,-72.5833333,-75.25,-73.1825,-75.1511111,-67.0674,-74.3333333,-75.9833333,-73.0833333,-75.0833333,-75.1263889,-75.7,-72.8666667,-75.7883333,-72.734,-73.4666667,-75.517,-75.9883333,-72.6416667,-75.6833333,-73.8894444,-75.2455556,-74.6666667,-76.53,-73.0833333,-75.0866667,-77.1666667,-75.0833333,-73.8377778,-73.1675,-71.5819444,-75,-75.1666667,-73.5152778,-73.9166667,-72.734,-73.75,-75.5,-76.9166667,-74.0833333,-76.1666667,-77.1180556,-76.3786111,-75.5833333,-75.9166667,-75,-74.8333333,-76.6666667,-74.3333333,-74.9166667,-73.4138889,-74.7888889,-75.3333333,-74.3,-77.45,-74.5833333,-77.9166667,-74.167,-75.25,-75.8280556,-73.5919444,-74.9644444,-75.7,-74.2016667,-75.3333333,-75.6213889,-75.4166667,-73,-74.0544444,-73.5833333,-77.6761,-77.68,-73.4822222,-76.4866667,-77.0075,-75.5333333,-75.1647222,-74.8333333,-76,-77.6,-71.8533333,-72.75,-74.45,-72.6666667,-72.6666667,-74.75,-73.8333333,-75.9361111,-73.1666667,-74.2605556,-76.9166667,-72.75,-74.3333333,-76.3333333,-73.8333333,-74.1666667,-75.3977778,-74.5833333,-74.2213889,-72.6666667,-72.6666667,-73.2,-72.9297222,-75.2486111,-74.7666667,-75.623,-75,-75.75,-75.1,-73.95,-73.3166667,-73.25,-76.6186111,-73.3,-74.9166667,-76.6952778,-75.8333333,-74.1666667,-75,-73.8333333,-74.25,-75.6333333,-73.8333333,-72.6666667,-73.5833333,-73.856,-74.0833333,-76.4166667,-74.5686111,-73.5833333,-71.7288889,-75.6666667,-77.25,-77.3,-69.6669444,-69.733,-75.35,-75.9166667,-75.8333333,-72.7,-72.7552778,-73.9166667,-75.0833333,-74.4166667,-74.6666667,-74.1666667,-73.45,-73.1666667,-75.6666667,-75.75,-73.3833333,-72.9666667,-72.7394444,-76.0591667,-75.9166667,-76.75,-77.5833333,-73.65,-72.6952778,-74.2669444,-75.8,-73.1666667,-74.6666667,-73.9166667,-73.4166667,-72.25,-75.433,-72.9,-72.8333333,-76.1666667,-76.0813889,-73,-76.3333333,-71.6311111,-76.3333333,-74.95,-75.55,-76.2,-73.3677778,-77.5833333,-75.3333333,-75.4166667,-76.5833333,-73.5,-73.1666667,-73.5,-74,-75.75,-73.45,-74.0833333,-77.0961111,-76.617,-76.1741667,-74.358,-72,-76.4166667,-73.0166667,-74.9666667,-74.5,-75.3333333,-76.1666667,-73.0666667,-75.1666667,-76.9191667,-73.2505556,-75.5833333,-74.8016667,-73.5833333,-74.9166667,-74.5,-73.5,-74.3333333,-76.25,-72.8666667,-74.55,-75.5,-76.8986111,-76.4491667,-72.9763889,-73.8333333,-73.5333333,-72.4741667,-76.8477778,-76.627,-75.1666667,-75.5,-73.1777778,-73.5833333,-74.5833333,-73.635,-75.1666667,-74.5,-74.5,-73.25,-73.7513889,-75.8666667,-74.4166667,-77.4166667,-75.5833333,-75.5,-69.2081,-75,-73.9141667,-72.3941667,-76.3333333,-76.4958333,-74.8333333,-73.25,-74.719,-74.75,-76.0772222,-73.1666667,-74.4166667,-74.0058333,-74.060849],8,null,null,{"interactive":true,"className":"","stroke":true,"color":"purple","weight":5,"opacity":0.5,"fill":0.8,"fillColor":"purple","fillOpacity":0.2},null,null,["abejorral 25","ábrego 62","abriaquí 16","acacías 509","acandí 61","acevedo 17","achí 58","agrado 15","agua de dios 59","aguachica 710","aguada 4","aguadas 83","aguazul 115","agustín codazzi 400","aipe 56","albán 109","albania 172","alcalá 21","aldana 34","alejandría 6","algarrobo 17","algeciras 116","alpujarra 1","altamira 20","alto baudó 40","altos del rosario 18","alvarado 5","amagá 103","amalfi 55","ambalema 1","anapoima 134","ancuyá 7","andalucía 46","andes 84","angelópolis 1","angostura 11","anolaima 12","anorí 72","anserma 64","ansermanuevo 13","anzá 31","anzoátegui 19","apartadó 3129","apía 5","apulo 21","aquitania 51","aracataca 136","aranzazu 5","aratoca 7","arauca 680","arauquita 109","arbeláez 14","arboleda 8","arboledas 22","arboletes 188","arcabuco 15","arenal 11","argelia 140","ariguaní 43","arjona 320","armenia 1259","armero 3","arroyohondo 5","astrea 27","ataco 2","atrato 40","ayapel 69","bagadó 61","bahía solano 55","bajo baudó 31","balboa 74","baranoa 1992","baraya 55","barbacoas 534","barbosa 263","barichara 4","barranca de upía 1","barrancabermeja 3880","barrancas 180","barranco de loba 30","barranquilla 36798","becerril 98","belalcázar 28","belén 10","belén de los andaquíes 32","belén de umbría 27","bello 7735","belmira 4","beltrán 2","betania 2","betulia 10","bituima 1","boavita 5","bochalema 15","bogotá d.c. 230120","bojacá 65","bojayá 12","bolívar 16","bosconia 320","boyacá 12","briceño 40","bucaramanga 9674","bucarasica 7","buenaventura 2473","buenavista 209","buenos aires 29","buesaco 52","bugalagrande 48","buriticá 517","cabrera 5","cabuyaro 8","cáceres 106","cachipay 16","cáchira 2","cácota 1","caicedo 29","caicedonia 26","caimito 62","cajamarca 25","cajibío 39","cajicá 1058","calamar 77","calarcá 196","caldas 1164","caldono 38","cali 39919","california 6","calima 4","caloto 81","campamento 17","campo de la cruz 147","campoalegre 222","canalete 196","cañasgordas 53","candelaria 972","cantagallo 62","caparrapí 7","capitanejo 4","cáqueza 77","caracolí 14","caramanta 2","carcasí 2","carepa 1062","carmen de apicalá 28","carmen de carupa 4","carmen del darién 15","carolina 10","cartagena de indias 21023","cartagena del chairá 205","cartago 360","carurú 2","casabianca 1","castilla la nueva 56","caucasia 693","cepitá 4","cereté 1519","cerinza 2","cerrito 6","cerro de san antonio 51","cértegui 15","chachagüí 46","chalán 6","chaparral 29","charalá 10","chía 1721","chigorodó 657","chima 2","chimá 71","chimichagua 71","chinácota 44","chinchiná 209","chinú 323","chipaque 33","chipatá 2","chiquinquirá 370","chíquiza 14","chiriguaná 146","chiscas 2","chita 8","chitagá 24","chitaraque 14","chivatá 6","chivolo 9","chivor 1","choachí 19","chocontá 47","cicuco 131","ciénaga 1480","ciénaga de oro 496","ciénega 17","cimitarra 167","circasia 44","cisneros 12","ciudad bolívar 59","clemencia 36","cocorná 22","coello 1","cogua 147","colombia 7","colón 27","coloso 15","cómbita 105","concepción 14","concordia 32","condoto 16","confines 1","consacá 74","contadero 33","contratación 3","convención 10","copacabana 1272","coper 8","córdoba 258","corinto 52","coromoro 1","corozal 738","corrales 3","cota 392","cotorra 146","covarachía 2","coveñas 353","coyaima 69","cuaspúd 30","cubará 34","cucaita 9","cucunubá 13","cúcuta 9017","cucutilla 10","cuítiva 1","cumaral 88","cumaribo 3","cumbal 136","cumbitara 28","cunday 2","curillo 21","curití 14","curumaní 162","dabeiba 107","dagua 156","dibulla 108","distracción 93","dolores 14","donmatías 93","dosquebradas 1585","duitama 726","durania 15","ebéjico 24","el águila 7","el bagre 382","el banco 552","el cairo 4","el cantón san pablo 16","el carmen 9","el carmen de atrato 188","el carmen de bolívar 344","el carmen de chucurí 18","el carmen de viboral 98","el castillo 18","el cerrito 317","el charco 128","el cocuy 4","el colegio 73","el copey 118","el doncello 184","el dorado 1","el dovio 8","el espino 6","el guacamayo 1","el guamo 2","el litoral san juan 1","el litoral san juan 1","el molino 30","el paso 64","el paujíl 32","el peñol 26","el peñón 26","el piñón 21","el playón 64","el retén 100","el retorno 16","el roble 44","el rosal 148","el rosario 1","el santuario 127","el tambo 86","el tarra 34","el zulia 112","elías 13","encino 2","entrerríos 136","envigado 2774","espinal 1571","facatativá 1452","filadelfia 1","filandia 11","firavitoba 18","flandes 120","florencia 5726","florián 2","florida 433","floridablanca 3898","fómeque 26","fonseca 196","fortul 20","fosca 5","francisco pizarro 45","fredonia 29","fresno 63","frontino 27","fuente de oro 38","fundación 396","funes 22","funza 1371","fúquene 7","fusagasugá 600","gachalá 6","gachancipá 106","gachantivá 9","gachetá 14","galán 1","galapa 1581","galeras 66","gama 1","gamarra 28","gámeza 1","garagoa 14","garzón 303","génova 21","gigante 272","ginebra 46","giraldo 96","girardot 1136","girardota 486","girón 1660","gómez plata 10","gonzález 44","gramalote 15","granada 582","guaca 2","guacamayas 11","guacarí 60","guachené 60","guachetá 5","guachucal 73","guadalajara de buga 668","guadalupe 55","guaduas 32","guaitarilla 51","gualmatán 8","guamal 55","guamo 114","guapí 85","guapotá 2","guaranda 98","guarne 298","guasca 21","guatapé 42","guataquí 1","guatavita 5","guateque 21","guática 4","guavatá 3","guayabetal 8","guayatá 5","hacarí 7","hatillo de loba 17","hato 1","hato corozal 8","hatonuevo 49","heliconia 53","herrán 10","herveo 2","hispania 25","hobo 29","honda 117","ibagué 5788","icononzo 19","iles 9","imués 33","inírida 322","inzá 27","ipiales 1807","íquira 6","isnos 99","istmina 173","itagüí 4964","ituango 952","iza 5","jambaló 6","jamundí 1261","jardín 7","jenesano 4","jericó 24","jerusalén 1","juan de acosta 246","junín 9","la apartada 95","la argentina 32","la belleza 10","la calera 202","la ceja 275","la celia 9","la chorrera 14","la cruz 22","la cumbre 53","la dorada 614","la esperanza 7","la estrella 982","la florida 54","la gloria 77","la jagua de ibirico 260","la jagua del pilar 3","la llanada 18","la macarena 11","la merced 12","la mesa 96","la montañita 49","la palma 7","la paz 142","la pedrera 79","la pintada 31","la plata 94","la playa 2","la primavera 1","la sierra 16","la tebaida 91","la tola 47","la unión 323","la uvita 1","la vega 34","la victoria 15","la virginia 426","labateca 6","landázuri 20","lebrija 147","leiva 8","lejanías 7","lenguazaque 26","lérida 31","leticia 2486","líbano 53","liborina 28","linares 12","lloró 11","lópez de micay 11","lorica 838","los andes 3","los andes 3","los córdobas 94","los palmitos 130","los patios 888","los santos 16","lourdes 2","luruaco 174","macanal 1","maceo 27","machetá 15","madrid 1188","magangué 1114","magüí 208","mahates 87","maicao 2065","majagual 67","málaga 91","malambo 2649","mallama 52","manatí 271","manaure 129","manaure balcón del cesar 22","maní 44","manizales 1851","manta 2","manzanares 27","mapiripán 4","mapiripana 2","margarita 3","maría la baja 44","marinilla 342","maripí 17","marmato 148","marquetalia 10","marsella 14","matanza 11","medellín 52430","medio baudó 21","medio san juan 26","melgar 241","mercaderes 57","mesetas 7","milán 22","miraflores 8","miranda 156","mistrató 7","mitú 403","mocoa 802","mogotes 11","molagavita 8","momil 63","mompós 244","monguí 4","moniquirá 92","moñitos 103","montebello 9","montecristo 27","montelíbano 995","montenegro 57","montería 13072","monterrey 29","morales 28","morelia 19","morroa 122","mosquera 1886","motavita 18","murindó 84","mutatá 107","mutiscua 7","muzo 11","nariño 52","nátaga 36","natagaima 46","nechí 151","necoclí 299","neira 28","neiva 3865","nemocón 55","nilo 268","nimaima 2","nobsa 85","nocaima 3","norcasia 3","norosí 41","nóvita 5","nueva granada 24","nuevo colón 8","nuquí 89","obando 27","ocaña 891","oiba 11","oicatá 2","olaya 14","olaya herrera 80","onzaga 2","oporapa 26","orito 465","orocué 4","ortega 16","ospina 2","otanche 6","ovejas 297","pachavita 5","pacho 81","pácora 10","padilla 18","páez 9","paicol 7","pailitas 95","paipa 86","pajarito 2","palermo 144","palestina 33","palmar de varela 517","palmira 1723","palmito 56","palocabildo 5","pamplona 345","pamplonita 7","pandi 1","panqueba 2","páramo 3","paratebueno 1","pasca 24","pasto 8353","patía 152","pauna 6","paya 2","paz de ariporo 81","paz de río 10","pedraza 34","pelaya 41","peñol 27","pensilvania 1","peque 16","pereira 5005","pesca 28","piamonte 2","piedecuesta 1519","piedras 15","piendamó 135","pijao 5","pijiño del carmen 13","pinchote 8","pinillos 75","piojó 50","pital 17","pitalito 721","pivijay 66","planadas 10","planeta rica 563","plato 359","policarpa 1","polonuevo 482","ponedera 244","popayán 4003","pore 43","potosí 23","pradera 332","prado 5","providencia 14","pueblo bello 42","pueblo nuevo 195","pueblo rico 81","puebloviejo 280","puerres 43","puerto asís 781","puerto berrío 181","puerto boyacá 260","puerto caicedo 70","puerto carreño 204","puerto colombia 1425","puerto concordia 5","puerto escondido 49","puerto gaitán 530","puerto guzmán 99","puerto leguízamo 132","puerto libertador 153","puerto lleras 2","puerto lópez 74","puerto nare 196","puerto nariño 130","puerto parra 3","puerto rico 128","puerto salgar 27","puerto santander 62","puerto tejada 355","puerto triunfo 41","puerto wilches 106","pupiales 97","puracé 12","purificación 25","purísima de la concepción 21","quebradanegra 1","quetame 6","quibdó 2628","quimbaya 38","quinchía 26","quípama 6","quipile 1","ragonvalia 4","ramiriquí 7","ráquira 1","recetor 1","regidor 6","remedios 148","remolino 25","repelón 182","restrepo 71","retiro 83","ricaurte 148","río de oro 58","río iró 8","río quito 43","río viejo 14","rioblanco 13","riofrío 7","riohacha 2418","rionegro 1412","riosucio 224","risaralda 12","rivera 69","roberto payán 90","roldanillo 56","rosas 33","rovira 17","sabana de torres 112","sabanagrande 734","sabanalarga 2111","sabanas de san ángel 2","sabaneta 1329","saboyá 4","sahagún 785","saladoblanco 49","salamina 27","salazar 28","saldaña 36","salento 8","salgar 112","samacá 80","samaná 6","samaniego 61","sampués 332","san agustín 131","san alberto 105","san andrés 377","san andrés de cuerquía 25","san andrés de sotavento 175","san andrés de tumaco 1910","san antero 70","san antonio 18","san antonio del tequendama 20","san benito 4","san benito abad 34","san bernardo 54","san bernardo del viento 64","san calixto 6","san carlos 169","san carlos de guaroa 51","san cayetano 53","san cristóbal 28","san diego 74","san estanislao 12","san felipe 2","san fernando 3","san francisco 50","san gil 403","san jacinto 125","san jacinto del cauca 24","san jerónimo 48","san joaquín 2","san josé 3","san josé de miranda 7","san josé de pare 1","san josé de uré 67","san josé del fragua 43","san josé del guaviare 346","san josé la montaña 7","san juan de arama 4","san juan de betulia 105","san juan de rioseco 7","san juan de urabá 44","san juan del cesar 225","san juan nepomuceno 111","san lorenzo 20","san luis 120","san luis de cubarral 17","san luis de gaceno 11","san luis de palenque 1","san luis de sincé 131","san marcos 297","san martín 245","san martín de loba 17","san miguel 124","san miguel de sema 1","san onofre 99","san pablo 168","san pablo de borbur 32","san pedro 181","san pedro de cartago 12","san pedro de urabá 141","san pedro los milagros 76","san pelayo 165","san rafael 7","san roque 27","san sebastián 1","san sebastián de buenavista 58","san sebastián de mariquita 100","san vicente de chucurí 101","san vicente del caguán 521","san vicente ferrer 41","san zenón 13","sandoná 159","santa ana 109","santa bárbara 154","santa bárbara de pinto 4","santa catalina 20","santa fé de antioquia 422","santa helena del opón 14","santa lucía 130","santa maría 39","santa marta 9023","santa rosa 123","santa rosa de cabal 246","santa rosa de osos 203","santa rosa de viterbo 22","santa rosa del sur 167","santa sofía 5","santacruz 1","santacruz 1","santana 7","santander de quilichao 533","santiago 41","santiago de tolú 178","santo domingo 38","santo tomás 721","santuario 36","sapuyes 8","saravena 235","sardinata 136","sasaima 22","sativanorte 1","sativasur 2","segovia 439","sesquilé 26","sevilla 34","siachoque 11","sibaté 632","sibundoy 42","silos 17","silvania 68","silvia 64","simijaca 24","simití 2","sincelejo 8908","sitionuevo 145","soacha 9296","soatá 36","socha 34","socorro 47","sogamoso 777","solano 12","soledad 13988","solita 8","sonsón 98","sopetrán 131","soplaviento 66","sopó 164","soracá 19","sotaquirá 2","sotara 9","suaita 21","suan 141","suárez 34","suaza 28","subachoque 63","sucre 87","suesca 32","supatá 3","supía 108","susa 1","susacón 4","sutamarchán 19","sutatausa 27","tabio 179","tadó 64","talaigua nuevo 102","tamalameque 41","tame 71","támesis 18","taminango 45","tangua 51","taraira 62","tarapacá 8","tarazá 143","tarqui 19","tarso 16","tasco 1","tauramena 56","tausa 26","tello 44","tena 14","tenerife 11","tenjo 166","tenza 3","teorama 12","teruel 38","tesalia 24","tibaná 6","tibasosa 13","tibú 187","tierralta 355","timaná 46","timbío 93","timbiquí 19","tinjacá 3","tipacoque 2","tiquisio 96","titiribí 20","toca 18","tocaima 22","tocancipá 376","togüí 18","toledo 24","tolú viejo 131","tona 5","tópaga 2","toribío 37","toro 2","tota 10","totoró 14","trinidad 4","trujillo 20","tubará 372","tuchín 368","tuluá 806","tunja 1205","túquerres 187","turbaco 840","turbaná 102","turbo 1133","turmequé 3","tuta 13","ubalá 37","ubaque 9","ulloa 13","úmbita 18","une 15","unguía 15","unión panamericana 56","uramita 73","uribe 2","uribia 272","urrao 73","urumita 39","usiacurí 181","útica 1","valdivia 75","valencia 99","valle de san josé 13","valle de san juan 2","valle del guamuez 349","valledupar 10133","valparaíso 21","vegachí 4","vélez 18","venadillo 15","venecia 50","ventaquemada 45","vergara 1","versalles 7","vetas 5","vianí 18","victoria 6","vigía del fuerte 68","vijes 55","villa caro 1","villa de de ubaté 242","villa de leyva 55","villa del rosario 919","villa rica 157","villagarzón 368","villahermosa 6","villamaría 146","villanueva 310","villapinzón 34","villarrica 7","villavicencio 9369","villavieja 23","villeta 62","viotá 8","viracachá 12","vistahermosa 8","viterbo 32","yacopí 5","yacuanquer 109","yaguará 46","yarumal 111","yavaraté 26","yolombó 66","yondó 50","yopal 818","yotoco 67","yumbo 842","zambrano 51","zapatoca 6","zapayán 2","zaragoza 81","zarzal 141","zetaquira 15","zipacón 13","zipaquirá 2068","zona bananera 270"],null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"limits":{"lat":[-4.2152778,12.5],"lng":[-81.75,-67.0674]}},"evals":[],"jsHooks":[]}</script>
+<p><strong>Datos</strong> - 08 de septiembre de 2020 actualización de los datos objeto del uso y/o transformación. <a href="https://www.datos.gov.co/Salud-y-Protecci-n-Social/Casos-positivos-de-COVID-19-en-Colombia/gt2j-8ykr/data" class="uri">https://www.datos.gov.co/Salud-y-Protecci-n-Social/Casos-positivos-de-COVID-19-en-Colombia/gt2j-8ykr/data</a></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
